@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HomeSphere | Find Your Dream Home</title>
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const header = document.querySelector("header");
+
+            window.addEventListener("scroll", function () {
+                if (window.scrollY > 50) {
+                    header.classList.add("scrolled");
+                } else {
+                    header.classList.remove("scrolled");
+                }
+            });
+        });
+
+
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const searchInput = document.getElementById('arizona-search');
+            const dropdownArrow = document.querySelector('.dropdown-arrow');
+            const citiesDropdown = document.querySelector('.cities-dropdown');
+            const citiesList = document.querySelectorAll('.cities-dropdown li');
+
+            // Toggle dropdown when clicking arrow or input
+            [searchInput, dropdownArrow].forEach(el => {
+                el.addEventListener('click', function () {
+                    citiesDropdown.style.display = citiesDropdown.style.display === 'block' ? 'none' : 'block';
+                });
+            });
+
+            // Select city from dropdown
+            citiesList.forEach(city => {
+                city.addEventListener('click', function () {
+                    searchInput.value = this.textContent;
+                    citiesDropdown.style.display = 'none';
+                });
+            });
+
+            // Filter cities while typing
+            searchInput.addEventListener('input', function () {
+                const searchTerm = this.value.toLowerCase();
+                citiesList.forEach(city => {
+                    const cityName = city.textContent.toLowerCase();
+                    city.style.display = cityName.includes(searchTerm) ? 'block' : 'none';
+                });
+                citiesDropdown.style.display = 'block';
+            });
+
+            // Close dropdown when clicking outside
+            document.addEventListener('click', function (e) {
+                if (!e.target.closest('.search-input-wrapper') && !e.target.closest('.cities-dropdown')) {
+                    citiesDropdown.style.display = 'none';
+                }
+            });
+        });
+
+
+
+
+
+        // feature listig
+        document.addEventListener('DOMContentLoaded', function () {
+            const track = document.querySelector('.listings-track');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+            const cards = document.querySelectorAll('.property-card');
+            const cardWidth = cards[0].offsetWidth + 25; // width + gap
+
+            let currentPosition = 0;
+            const visibleCards = window.innerWidth >= 1400 ? 6 :
+                window.innerWidth >= 992 ? 4 :
+                    window.innerWidth >= 768 ? 3 :
+                        window.innerWidth >= 480 ? 2 : 1;
+
+            const maxPosition = -((cards.length - visibleCards) * cardWidth);
+
+            nextBtn.addEventListener('click', function () {
+                currentPosition = Math.max(currentPosition - (visibleCards * cardWidth), maxPosition);
+                track.style.transform = `translateX(${currentPosition}px)`;
+                updateButtons();
+            });
+
+            prevBtn.addEventListener('click', function () {
+                currentPosition = Math.min(currentPosition + (visibleCards * cardWidth), 0);
+                track.style.transform = `translateX(${currentPosition}px)`;
+                updateButtons();
+            });
+
+            function updateButtons() {
+                prevBtn.style.opacity = currentPosition === 0 ? 0.5 : 1;
+                nextBtn.style.opacity = currentPosition <= maxPosition ? 0.5 : 1;
+            }
+
+            updateButtons();
+
+            // Handle window resize
+            window.addEventListener('resize', function () {
+                const newVisibleCards = window.innerWidth >= 1400 ? 6 :
+                    window.innerWidth >= 992 ? 4 :
+                        window.innerWidth >= 768 ? 3 :
+                            window.innerWidth >= 480 ? 2 : 1;
+
+                if (newVisibleCards !== visibleCards) {
+                    currentPosition = 0;
+                    track.style.transform = 'translateX(0)';
+                    updateButtons();
+                }
+            });
+        });
+
+
+
+
+        // Feature Sectio
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const track = document.querySelector('.listings-track');
+            const prevBtn = document.querySelector('.prev-btn');
+            const nextBtn = document.querySelector('.next-btn');
+            const cards = document.querySelectorAll('.property-card');
+            const cardWidth = cards[0].offsetWidth + 20; // width + gap
+
+            let currentPosition = 0;
+
+            prevBtn.addEventListener('click', function () {
+                currentPosition += cardWidth;
+                currentPosition = Math.min(currentPosition, 0);
+                track.style.transform = `translateX(${currentPosition}px)`;
+            });
+
+            nextBtn.addEventListener('click', function () {
+                currentPosition -= cardWidth;
+                currentPosition = Math.max(currentPosition, -(cards.length - 1) * cardWidth);
+                track.style.transform = `translateX(${currentPosition}px)`;
+            });
+        });
+
+
+        // testimoials
+        // testimonials
+        document.addEventListener('DOMContentLoaded', function () {
+            const pairs = document.querySelectorAll('.testimonial-pair');
+            const dots = document.querySelectorAll('.nav-dot');
+            let currentIndex = 0;
+            let interval;
+            const displayTime = 5000; // 5 seconds per testimonial pair
+
+            // Function to show specific testimonial pair
+            function showTestimonialPair(index) {
+                // Hide all testimonial pairs
+                pairs.forEach(pair => pair.classList.remove('active'));
+                dots.forEach(dot => dot.classList.remove('active'));
+
+                // Show selected testimonial pair
+                pairs[index].classList.add('active');
+                dots[index].classList.add('active');
+                currentIndex = index;
+            }
+
+            // Function to auto-rotate testimonial pairs
+            function startAutoRotation() {
+                interval = setInterval(() => {
+                    currentIndex = (currentIndex + 1) % pairs.length;
+                    showTestimonialPair(currentIndex);
+                }, displayTime);
+            }
+
+            // Add click event to navigation dots
+            dots.forEach(dot => {
+                dot.addEventListener('click', function () {
+                    clearInterval(interval);
+                    showTestimonialPair(parseInt(this.getAttribute('data-index')));
+                    startAutoRotation();
+                });
+            });
+
+            // Start auto rotation
+            startAutoRotation();
+
+            // Pause on hover
+            const testimonialContainer = document.querySelector('.testimonial-cards');
+            testimonialContainer.addEventListener('mouseenter', () => clearInterval(interval));
+            testimonialContainer.addEventListener('mouseleave', startAutoRotation);
+        });
+
+
+
+        // contact form
+
+        // Tab Switching Logic
+        document.addEventListener('DOMContentLoaded', function () {
+            const tabButtons = document.querySelectorAll('.tab-button');
+            const forms = document.querySelectorAll('.lead-form');
+
+            tabButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    // Remove active class from all buttons & forms
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    forms.forEach(form => form.classList.remove('active'));
+
+                    // Add active class to clicked button
+                    button.classList.add('active');
+
+                    // Show corresponding form
+                    const tabName = button.getAttribute('data-tab');
+                    document.getElementById(`${tabName}-form`).classList.add('active');
+                });
+            });
+        });
+
+    </script>
+</head>
+
+<body>
+    <header>
+        <div class="container">
+            <!-- Left Logo -->
+            <div class="logo">
+                <a href="index.html">
+                    <!-- <img src="logo.jpg" alt="ArizonVibe Logo" class="logo-image"> -->
+                    <h1>ArizonaVibe</h1>
+                </a>
+            </div>
+
+            <!-- Centered Navigation -->
+            <nav class="nav-center">
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li class="dropdown">
+                        <a href="#" class="dropbtn">Services ▾</a>
+                        <div class="dropdown-content">
+                            <a href="buy.html">Buy</a>
+                            <a href="sell.html">Sell</a>
+                            <a href="property.html">Property Care</a>
+                            <a href="build-group.html">Build Group</a>
+                        </div>
+                    </li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="lifestyle.html">LifeStyle</a></li>
+                    <li><a href="AC.html">ACN</a></li>
+                </ul>
+            </nav>
+
+            <!-- Right Auth Buttons -->
+            <div class="auth-container">
+                <div class="auth-buttons">
+                    <a href="join-us.html" class="btn primary">Join Us</a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+
+    <section class="hero">
+        <!-- Video Background -->
+        <div class="video-background">
+            <video autoplay muted loop playsinline>
+                <source src="1.mp4" type="video/mp4">
+                <img src="fallback-image.jpg" alt="Arizona landscape">
+            </video>
+            <div class="video-overlay"></div>
+        </div>
+
+        <div class="container">
+            <div class="hero-grid">
+                <!-- Left Side - Search Content -->
+                <div class="hero-content">
+                    <h2 class="hero-title">Find Your Perfect <span class="vibe-text">Vibe</span></h2>
+                    <p class="hero-subtitle">Discover homes that match your unique Arizona lifestyle</p>
+
+                    <div class="search-container">
+                        <div class="search-box">
+                            <div class="search-input-wrapper">
+                                <i class="fas fa-search search-icon"></i>
+                                <input type="text" id="arizona-search" placeholder="Search Arizona cities..."
+                                    autocomplete="off">
+                                <div class="dropdown-arrow">▼</div>
+                            </div>
+                            <div class="cities-dropdown">
+                                <ul>
+                                    <li data-value="phoenix">Phoenix</li>
+                                    <li data-value="tucson">Tucson</li>
+                                    <li data-value="mesa">Mesa</li>
+                                    <li data-value="chandler">Chandler</li>
+                                    <li data-value="scottsdale">Scottsdale</li>
+                                    <li data-value="glendale">Glendale</li>
+                                    <li data-value="gilbert">Gilbert</li>
+                                    <li data-value="tempe">Tempe</li>
+                                    <li data-value="peoria">Peoria</li>
+                                    <li data-value="surprise">Surprise</li>
+                                    <li data-value="flagstaff">Flagstaff</li>
+                                    <li data-value="sedona">Sedona</li>
+                                    <li data-value="prescott">Prescott</li>
+                                    <li data-value="yuma">Yuma</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <button class="btn explore-btn">
+                            <i class="fas fa-map-marker-alt"></i> Explore Properties
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Right Side - Overview Box
+                <div class="overview-box">
+                    <h3 class="overview-title">Overview of Services</h3>
+                    <div class="services-grid">
+                        <a href="/buy" class="service-item">
+                            <div class="service-icon">
+                                <i class="fas fa-home"></i>
+                            </div>
+                            <span>Buy</span>
+                        </a>
+                        <a href="/sell" class="service-item">
+                            <div class="service-icon">
+                                <i class="fas fa-dollar-sign"></i>
+                            </div>
+                            <span>Sell</span>
+                        </a>
+                        <a href="/property-care" class="service-item">
+                            <div class="service-icon">
+                                <i class="fas fa-hands-helping"></i>
+                            </div>
+                            <span>Property Care</span>
+                        </a>
+                        <a href="/build-group" class="service-item">
+                            <div class="service-icon">
+                                <i class="fas fa-building"></i>
+                            </div>
+                            <span>Build Group</span>
+                        </a>
+                    </div>
+                </div> -->
+            </div>
+        </div>
+
+        <!-- Social Media Icons (Fixed Position) -->
+        <div class="social-media-fixed">
+            <a href="https://facebook.com" target="_blank" class="social-icon">
+                <i class="fab fa-facebook-f"></i>
+            </a>
+            <a href="https://instagram.com" target="_blank" class="social-icon">
+                <i class="fab fa-instagram"></i>
+            </a>
+            <a href="https://youtube.com" target="_blank" class="social-icon">
+                <i class="fab fa-youtube"></i>
+            </a>
+            <a href="https://linkedin.com" target="_blank" class="social-icon">
+                <i class="fab fa-linkedin-in"></i>
+            </a>
+        </div>
+    </section>
+
+
+    <!-- Feature sectio -->
+    <section class="features-section">
+        <div class="container">
+            <div class="features-grid">
+                <!-- All boxes now have the same background color -->
+                <a href="advanced-search.html" class="feature-box">
+                    <div class="feature-icon">
+                        <img src="1.webp" alt="Advanced Search Icon">
+                    </div>
+                    <h3>Advanced Search</h3>
+                    <p>Find your perfect neighborhood</p>
+                </a>
+
+                <a href="map-search.html" class="feature-box">
+                    <div class="feature-icon">
+                        <img src="2.webp" alt="Map Search Icon">
+                    </div>
+                    <h3>Map Search</h3>
+                    <p>Use your interactive map search tool</p>
+                </a>
+
+                <a href="market-report.html" class="feature-box">
+                    <div class="feature-icon">
+                        <img src="3.webp" alt="Market Report Icon">
+                    </div>
+                    <h3>Market Report</h3>
+                    <p>Get an INSTANT market report</p>
+                </a>
+
+                <a href="property-valuation.html" class="feature-box">
+                    <div class="feature-icon">
+                        <img src="4.webp" alt="Valuation Icon">
+                    </div>
+                    <h3>Property Valuation</h3>
+                    <p>Get an INSTANT home valuation</p>
+                </a>
+            </div>
+        </div>
+    </section>
+
+
+
+
+    <!-- Featured Listings Section -->
+    <section class="featured-listings">
+        <div class="container">
+            <!-- Centered Heading -->
+            <div class="section-header">
+                <h2 class="section-title">Featured Listings</h2>
+            </div>
+
+            <!-- Listings Content -->
+            <div class="section-content">
+                <div class="listings-carousel">
+                    <button class="carousel-btn prev-btn" aria-label="Previous properties">
+                        &lt;
+                    </button>
+                    <div class="listings-track">
+                        <!-- Listing 1 -->
+                        <div class="property-card">
+                            <div class="property-image">
+                                <img src="https://images.unsplash.com/photo-1564013799919-ab600027ffc6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                                    alt="Modern House">
+                            </div>
+                            <div class="property-info">
+                                <h4>$450,000</h4>
+                                <div class="property-details">
+                                    <span>3 bd | 2 ba | 1,850 sqft</span>
+                                </div>
+                                <p class="property-address">123 Main St, Anytown</p>
+                            </div>
+                        </div>
+
+                        <!-- Listing 2 -->
+                        <div class="property-card">
+                            <div class="property-image">
+                                <img src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                                    alt="Luxury Villa">
+                            </div>
+                            <div class="property-info">
+                                <h4>$1,200,000</h4>
+                                <div class="property-details">
+                                    <span>5 bd | 4 ba | 3,500 sqft</span>
+                                </div>
+                                <p class="property-address">456 Oak Ave, Lakeside</p>
+                            </div>
+                        </div>
+
+                        <!-- Listing 3 -->
+                        <div class="property-card">
+                            <div class="property-image">
+                                <img src="https://images.unsplash.com/photo-1605276374104-dee2a0ed3cd6?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                                    alt="Contemporary Home">
+                            </div>
+                            <div class="property-info">
+                                <h4>$675,000</h4>
+                                <div class="property-details">
+                                    <span>4 bd | 3 ba | 2,400 sqft</span>
+                                </div>
+                                <p class="property-address">789 Elm St, Hilltop</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="carousel-btn next-btn" aria-label="Next properties">
+                        &gt;
+                    </button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Testimonials Section -->
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="container">
+            <!-- Centered Heading -->
+            <div class="section-header">
+                <h2 class="section-title">Client Testimonials</h2>
+            </div>
+
+            <!-- Testimonials Content -->
+            <div class="section-content">
+                <div class="testimonial-cards">
+                    <!-- Testimonial Pair 1 (active by default) -->
+                    <div class="testimonial-pair active">
+                        <!-- Testimonial 1 -->
+                        <div class="testimonial-card">
+                            <div class="testimonial-content">
+                                <div class="client-photo">
+                                    <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                                        alt="Sarah Johnson">
+                                </div>
+                                <div class="testimonial-body">
+                                    <div class="rating">
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                    </div>
+                                    <blockquote class="testimonial-text">
+                                        "The team helped us find our dream home in Scottsdale within our budget. Their
+                                        knowledge of the local market is unmatched. We couldn't be happier with our
+                                        desert
+                                        oasis!"
+                                    </blockquote>
+                                    <div class="client-info">
+                                        <h4 class="client-name">Sarah Johnson</h4>
+                                        <p class="client-location">Scottsdale, AZ</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Testimonial 2 -->
+                        <div class="testimonial-card">
+                            <div class="testimonial-content">
+                                <div class="client-photo">
+                                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                                        alt="Michael Chen">
+                                </div>
+                                <div class="testimonial-body">
+                                    <div class="rating">
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                    </div>
+                                    <blockquote class="testimonial-text">
+                                        "As first-time home buyers in Phoenix, we were nervous, but our agent guided us
+                                        through every step. Found us a gem in the perfect neighborhood!"
+                                    </blockquote>
+                                    <div class="client-info">
+                                        <h4 class="client-name">Michael Chen</h4>
+                                        <p class="client-location">Phoenix, AZ</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Testimonial Pair 2 -->
+                    <div class="testimonial-pair">
+                        <!-- Testimonial 3 -->
+                        <div class="testimonial-card">
+                            <div class="testimonial-content">
+                                <div class="client-photo">
+                                    <img src="https://images.unsplash.com/photo-1544005313-94ddf0286df2?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                                        alt="Emily Rodriguez">
+                                </div>
+                                <div class="testimonial-body">
+                                    <div class="rating">
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star half">★</span>
+                                    </div>
+                                    <blockquote class="testimonial-text">
+                                        "Relocating from Chicago to Sedona was seamless thanks to their expertise. They
+                                        understood exactly what we were looking for in terms of views and amenities."
+                                    </blockquote>
+                                    <div class="client-info">
+                                        <h4 class="client-name">Emily Rodriguez</h4>
+                                        <p class="client-location">Sedona, AZ</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Testimonial 4 -->
+                        <div class="testimonial-card">
+                            <div class="testimonial-content">
+                                <div class="client-photo">
+                                    <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80"
+                                        alt="David Wilson">
+                                </div>
+                                <div class="testimonial-body">
+                                    <div class="rating">
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                        <span class="star filled">★</span>
+                                    </div>
+                                    <blockquote class="testimonial-text">
+                                        "Sold our Tucson home above asking price in just 3 days! The marketing strategy
+                                        was brilliant and we had multiple offers to choose from."
+                                    </blockquote>
+                                    <div class="client-info">
+                                        <h4 class="client-name">David Wilson</h4>
+                                        <p class="client-location">Tucson, AZ</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Navigation Dots -->
+                    <div class="testimonial-nav">
+                        <span class="nav-dot active" data-index="0"></span>
+                        <span class="nav-dot" data-index="1"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    <!-- End Testimonials Section -->
+
+
+
+
+    <!-- Qoutes -->
+    <section class="quote-section">
+        <div class="quote-overlay"></div>
+        <div class="container">
+            <div class="quote-grid">
+                <!-- Left Column - Quote Form -->
+                <div class="quote-form-container">
+                    <div class="quote-header">
+                        <h2 class="quote-title">Request A Quote</h2>
+                        <p class="quote-subtitle">Get personalized pricing for your property needs</p>
+                    </div>
+
+                    <form class="quote-form">
+                        <div class="form-columns">
+                            <div class="form-column">
+                                <div class="form-group">
+                                    <input class="form-input" type="text" placeholder="Your Name*" required>
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-input" type="email" placeholder="Your Email*" required>
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-input" type="text" placeholder="Your Location">
+                                </div>
+                            </div>
+
+                            <div class="form-column">
+                                <div class="form-group">
+                                    <input class="form-input" type="tel" placeholder="Your Phone*" required>
+                                </div>
+                                <div class="form-group">
+                                    <input class="form-input" type="text" placeholder="Property Address">
+                                </div>
+                                <div class="form-group">
+                                    <select class="form-input">
+                                        <option value="">Property Type</option>
+                                        <option>Single Family Home</option>
+                                        <option>Condo/Townhouse</option>
+                                        <option>Multi-Family</option>
+                                        <option>Commercial</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <textarea class="form-input" placeholder="Your Message (Optional)" rows="4"></textarea>
+                        </div>
+
+                        <div class="form-submit">
+                            <button type="submit" class="submit-btn">
+                                <span>GET QUOTE</span>
+                                <svg class="arrow-icon" viewBox="0 0 24 24">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Right Column - Newsletter -->
+                <div class="newsletter-container">
+                    <div class="newsletter-header">
+                        <h2 class="newsletter-title">Our Newsletter</h2>
+                        <p class="newsletter-subtitle">Subscribe to our newsletter and receive the latest news about our
+                            products and services!</p>
+                    </div>
+
+                    <div class="newsletter-form">
+                        <div class="newsletter-input-group">
+                            <input type="email" placeholder="Your Email Address" class="newsletter-input">
+                            <button type="submit" class="newsletter-btn">
+                                <span>SUBSCRIBE</span>
+                                <svg class="arrow-icon" viewBox="0 0 24 24">
+                                    <path d="M5 12h14M12 5l7 7-7 7" />
+                                </svg>
+                            </button>
+                        </div>
+                        <p class="newsletter-disclaimer">We respect your privacy. Unsubscribe at any time.</p>
+                    </div>
+
+                    <div class="newsletter-benefits">
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <span>Exclusive property listings</span>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <span>Market trend reports</span>
+                        </div>
+                        <div class="benefit-item">
+                            <div class="benefit-icon">
+                                <svg viewBox="0 0 24 24">
+                                    <path d="M5 13l4 4L19 7" />
+                                </svg>
+                            </div>
+                            <span>Special offers & promotions</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+
+
+
+
+
+
+    <footer>
+        <div class="container">
+            <div class="footer-boxes">
+                <div class="footer-box">
+                    <h5>Real Estate</h5>
+                    <ul>
+                        <li><a href="listings.html">Browse Homes</a></li>
+                        <li><a href="#">Foreclosures</a></li>
+                        <li><a href="#">New Construction</a></li>
+                        <li><a href="#">Coming Soon</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-box">
+                    <h5>Resources</h5>
+                    <ul>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Guides</a></li>
+                        <li><a href="#">FAQ</a></li>
+                        <li><a href="#">Help Center</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-box">
+                    <h5>Company</h5>
+                    <ul>
+                        <li><a href="about.html">About Us</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="contact.html">Contact</a></li>
+                        <li><a href="#">Privacy Policy</a></li>
+                    </ul>
+                </div>
+
+                <div class="footer-box connect-box">
+                    <h5 class="connect-heading">Connect</h5>
+                    <div class="social-icons">
+                        <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+                        <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+                        <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+                        <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="copyright">
+                <p>&copy; 2023 HomeSphere. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+</body>
+
+</html>
